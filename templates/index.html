@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Rating</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+        }
+        textarea {
+            width: 600px;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #results {
+            margin-top: 30px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Code Rating</h1>
+    <textarea id="codeSnippet" placeholder="Paste your code snippet here"></textarea>
+    <button id="rateButton">Rate Code</button>
+    <div id="results"></div>
+
+    <script>
+        document.getElementById('rateButton').addEventListener('click', async () => {
+            const codeSnippet = document.getElementById('codeSnippet').value;
+            const response = await fetch('/rate_code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code_snippet: codeSnippet })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('results').innerHTML = `
+                    <p>Correctness: ${data.correctness}/40</p>
+                    <p>Readability: ${data.readability}/30</p>
+                    <p>Algorithm: ${data.algorithm}/30</p>
+                    <p>Total Rating: ${data.total_rating}/100</p>
+                `;
+            } else {
+                document.getElementById('results').textContent = 'Error: Unable to rate code.';
+            }
+        });
+    </script>
+</body>
+</html>
